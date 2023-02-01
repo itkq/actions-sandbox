@@ -1,0 +1,10 @@
+label1:
+- all: ['example1/**/*', 'example2/**/*']
+
+label2:
+- any: ['example1/**/*', 'example2/**/*']
+
+label3:
+- example1/**/*
+- example2/**/*
+
