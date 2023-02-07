@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Check for Command
         id: command
-        uses: xt0rted/slash-command-action@3a817099c49ca2f60140c33889fb6084649d3e19
+        uses: xt0rted/slash-command-action@v2
         with:
           command: tfmigrate
           reaction-type: "eyes"
