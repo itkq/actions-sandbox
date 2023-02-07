@@ -1,0 +1,23 @@
+name: "issue_commen test"
+on:
+  issue_comment:
+    types: [created]
+jobs:
+  setup:
+    if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/test') }}
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check for Command
+        id: command
+        uses: xt0rted/slash-command-action@3a817099c49ca2f60140c33889fb6084649d3e19
+        with:
+          command: tfmigrate
+          reaction-type: "eyes"
+      - run: |
+          ls -l .github/workflows/
