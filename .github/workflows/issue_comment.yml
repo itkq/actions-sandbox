@@ -4,7 +4,7 @@ on:
     types: [created]
 jobs:
   setup:
-    if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/test') }}
+    # if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/test') }}
     permissions:
       contents: read
       pull-requests: write
