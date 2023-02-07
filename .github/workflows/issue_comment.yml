@@ -1,10 +1,10 @@
-name: "issue_commen test"
+name: "issue_comment test"
 on:
   issue_comment:
     types: [created]
 jobs:
   setup:
-    # if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/test') }}
+    if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, '/test') }}
     permissions:
       contents: read
       pull-requests: write
