@@ -15,5 +15,8 @@ jobs:
   workflow_run:
     runs-on: ubuntu-latest
     steps:
-      - run: |
-        echo ${{ github.head_ref }}
+      - name: Debug
+        uses: actions/github-script@v6
+        with:
+          script: |
+            core.info(JSON.stringify(context.payload))
