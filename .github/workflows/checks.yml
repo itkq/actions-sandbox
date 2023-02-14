@@ -12,21 +12,30 @@ jobs:
   setup_matrix:
     runs-on: ubuntu-latest
     outputs:
-      head_sha: "[${{ steps.find_pr.outputs.head-sha }}]"
-      pr_number: "[${{ steps.find_pr.outputs.number }}]"
+      head_shas: ${{ steps.set_output.outputs.head_shas }}
+      pr_numbers: ${{ steps.set_output.outputs.pr_numbers }}
     steps:
       - uses: juliangruber/find-pull-request-action@v1
         id: find_pr
         with:
           branch: ${{ github.head_ref }}
+      - name: Set output
+        id: set_output
+        run: |
+          head_shas='["${{ steps.find_pr.outputs.head-sha }}"]'
+          pr_numbers='["${{ steps.find_pr.outputs.number }}"]'
+          echo "head_shas=$head_shas"
+          echo "pr_numbers=$pr_numbers"
+          echo "head_shas=$head_shas" >> $GITHUB_OUTPUT
+          echo "pr_numbers=$pr_numbers" >> $GITHUB_OUTPUT
 
   workflow_run:
     needs:
       - setup_matrix
     strategy:
       matrix:
-        head_sha: ${{ fromJSON(needs.setup_matrix.outputs.head_sha) }}
-        pr_number: ${{ fromJSON(needs.setup_matrix.outputs.pr_number) }}
+        head_sha: ${{ fromJSON(needs.setup_matrix.outputs.head_shas) }}
+        pr_number: ${{ fromJSON(needs.setup_matrix.outputs.pr_numbers) }}
     concurrency:
       group: checks-${{ matrix.pr_number }}
       cancel-in-progress: true
