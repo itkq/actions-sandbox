@@ -26,7 +26,8 @@ jobs:
           pr_numbers='["${{ steps.find_pr.outputs.number }}"]'
           echo "head_shas=$head_shas"
           echo "pr_numbers=$pr_numbers"
-
+          echo "head_shas=$head_shas" >> $GITHUB_OUTPUT
+          echo "pr_numbers=$pr_numbers" >> $GITHUB_OUTPUT
 
   workflow_run:
     needs:
