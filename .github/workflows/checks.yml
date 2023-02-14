@@ -28,11 +28,11 @@ jobs:
       - name: Create checks
         run: |
           gh api /repos/${{ github.repository }}/commits/${{ steps.find_pr.outputs.head-sha }}/check-runs > ${{ runner.temp }}/check-run
-          total_count=$(cat ${{ runner.temp }}/check-run | jq -r '.total_count')
-          completed_count=$(cat ${{ runner.temp }}/check-run | jq -r '[.check_runs[] | select(.status == "completed" and .conclusion == "success")] | length')
+          failure_count=$(cat ${{ runner.temp }}/check-run | jq -r '[.check_runs[] | select(.name != "pr_check" and .status == "completed" and .conclusion != "success")] | length')
+          echo "failure_count=$failure_count"
 
           conclusion="failure"
-          if [ "$total_count" = "completed_count" ]; then
+          if [ "$failure_count" = "0" ]; then
             conclusion="success"
           fi
 
