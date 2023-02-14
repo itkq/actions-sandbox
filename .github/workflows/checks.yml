@@ -14,12 +14,9 @@ concurrency:
 jobs:
   workflow_run:
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
     steps:
-      # - name: Debug
-      #   uses: actions/github-script@v6
-      #   with:
-      #     script: |
-      #       core.info(JSON.stringify(context.payload))
       - uses: juliangruber/find-pull-request-action@v1
         id: find_pr
         with:
@@ -28,3 +25,19 @@ jobs:
         run: |
           echo "number=${{ steps.find_pr.outputs.number }}"
           echo "head_sha=${{ steps.find_pr.outputs.head-sha }}"
+      - name: Create checks
+        run: |
+          gh api /repos/${{ github.repository }}/commits/${{ steps.find_pr.outputs.head-sha }}/check-runs > ${{ runner.temp }}/check-run
+          total_count=$(cat ${{ runner.temp }}/check-run | jq -r '.total_count')
+          completed_count=$(cat ${{ runner.temp }}/check-run | jq -r '[.check_runs[] | select(.status == "completed" and .conclusion == "success")] | length')
+
+          conclusion="failure"
+          if [ "$total_count" = "completed_count" ]; then
+            conclusion="success"
+          fi
+
+          gh api /repos/${{ github.repository }}/check-runs -f name=pr_check -f head_sha=${{ steps.find_pr.outputs.head-sha }} -f status=completed -f conclusion=$conclusion
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
