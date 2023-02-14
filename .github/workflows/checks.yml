@@ -15,8 +15,16 @@ jobs:
   workflow_run:
     runs-on: ubuntu-latest
     steps:
-      - name: Debug
-        uses: actions/github-script@v6
+      # - name: Debug
+      #   uses: actions/github-script@v6
+      #   with:
+      #     script: |
+      #       core.info(JSON.stringify(context.payload))
+      - uses: juliangruber/find-pull-request-action@v1
+        id: find_pr
         with:
-          script: |
-            core.info(JSON.stringify(context.payload))
+          branch: ${{ github.head_ref }}
+      - name: debug
+        run: |
+          echo "number=${{ steps.find_pr.outputs.number }}"
+          echo "head_sha=${{ steps.find_pr.outputs.head-sha }}"
