@@ -1,13 +1,13 @@
 name: checks
 
 on:
-  check_suite:
-  check_run:
+  workflow_run:
+    # workflows: []
     types:
       - completed
 
 jobs:
-  check_run:
+  workflow_run:
     runs-on: ubuntu-latest
     steps:
-      - run: echo check run
+      - run: echo workflow_run
