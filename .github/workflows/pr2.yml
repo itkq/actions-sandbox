@@ -1,0 +1,12 @@
+name: pr2
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  pr2:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo pr2
