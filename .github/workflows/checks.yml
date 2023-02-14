@@ -7,27 +7,36 @@ on:
     types:
       - completed
 
-concurrency:
-  group: checks-${{ github.head_ref }}
-  cancel-in-progress: true
-
 jobs:
-  workflow_run:
+  # to put variable in concurrency group
+  setup_matrix:
     runs-on: ubuntu-latest
-    permissions:
-      checks: write
+    outputs:
+      head_sha: "[${{ steps.find_pr.outputs.head-sha }}]"
+      pr_number: "[${{ steps.find_pr.outputs.number }}]"
     steps:
       - uses: juliangruber/find-pull-request-action@v1
         id: find_pr
         with:
           branch: ${{ github.head_ref }}
-      - name: debug
-        run: |
-          echo "number=${{ steps.find_pr.outputs.number }}"
-          echo "head_sha=${{ steps.find_pr.outputs.head-sha }}"
+
+  workflow_run:
+    needs:
+      - setup_matrix
+    strategy:
+      matrix:
+        head_sha: ${{ fromJSON(needs.setup_matrix.outputs.head_sha) }}
+        pr_number: ${{ fromJSON(needs.setup_matrix.outputs.pr_number) }}
+    concurrency:
+      group: checks-${{ matrix.pr_number }}
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    permissions:
+      checks: write
+    steps:
       - name: Create checks
         run: |
-          gh api /repos/${{ github.repository }}/commits/${{ steps.find_pr.outputs.head-sha }}/check-runs > ${{ runner.temp }}/check-run
+          gh api /repos/${{ github.repository }}/commits/${{ matrix.head_sha }}/check-runs > ${{ runner.temp }}/check-run
           non_completed_count=$(cat ${{ runner.temp }}/check-run | jq -r '[.check_runs[] | select(.name != "pr_check" and .status != "completed")] | length')
           failure_count=$(cat ${{ runner.temp }}/check-run | jq -r '[.check_runs[] | select(.name != "pr_check" and .status == "completed" and .conclusion == "failure")] | length')
 
@@ -41,7 +50,7 @@ jobs:
             conclusion="failure"
           fi
 
-          gh api /repos/${{ github.repository }}/check-runs -f name=pr_check -f head_sha=${{ steps.find_pr.outputs.head-sha }} -f status=completed -f conclusion=$conclusion
+          gh api /repos/${{ github.repository }}/check-runs -f name=pr_check -f head_sha=${{ matrix.head_sha }} -f status=completed -f conclusion=$conclusion
 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
