@@ -2,9 +2,12 @@ name: checks
 
 on:
   check_suite:
+  check_run:
+    types:
+      - completed
 
 jobs:
-  check:
+  check_run:
     runs-on: ubuntu-latest
     steps:
-      - run: echo check
+      - run: echo check run
