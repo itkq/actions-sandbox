@@ -2,6 +2,9 @@ name: "Pull Request Labeler"
 on:
 - pull_request_target
 
+permissions:
+  contents: read
+
 jobs:
   triage:
     permissions:
@@ -9,6 +12,11 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/labeler@v4
+    - name: Harden Runner
+      uses: step-security/harden-runner@c8454efe5d0bdefd25384362fe217428ca277d57 # v2.2.0
+      with:
+        egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
+
+    - uses: actions/labeler@5c7539237e04b714afd8ad9b4aed733815b9fab4 # v4.0.2
       with:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"
