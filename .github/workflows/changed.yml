@@ -18,6 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    outputs:
+      change1: ${{ steps.set_outputs.outputs.change1 }}
+      change2: ${{ steps.set_outputs.outputs.change2 }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -27,9 +30,35 @@ jobs:
         with:
           files: 'change-test/**'
           dir_names: "true"
-      - name: Test changes
+      - name: Set outputs
+        id: set_outputs
         run: |
           for dir in ${{ steps.changed-files.outputs.all_changed_files }}; do
             echo "$dir was changed"
+            case "$dir" in
+              "change-test/1")
+                echo "change1=true" >> $GITHUB_OUTPUT ;;
+              "change-test/1/"*)
+                echo "change1=true" >> $GITHUB_OUTPUT ;;
+              "change-test/2")
+                echo "change2=true" >> $GITHUB_OUTPUT ;;
+              "change-test/2/"*)
+                echo "change2=true" >> $GITHUB_OUTPUT ;;
+            esac
           done
 
+  change1:
+    needs:
+      - changed_files
+    if: ${{ needs.changed_files.outputs.change1 == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo change1
+
+  change2:
+    needs:
+      - changed_files
+    if: ${{ needs.changed_files.outputs.change2 == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo change1
