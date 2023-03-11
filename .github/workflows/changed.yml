@@ -27,9 +27,9 @@ jobs:
         with:
           files: 'change-test/**'
           dir_names: "true"
-      - name: Make matrix
+      - name: Test changes
         run: |
-          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+          for dir in ${{ steps.changed-files.outputs.all_changed_files }}; do
             echo "$dir was changed"
           done
 
