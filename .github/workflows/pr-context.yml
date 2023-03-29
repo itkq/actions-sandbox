@@ -1,0 +1,15 @@
+name: 'Dump PR context'
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  dry_run:
+    if: "github.event_name == 'pull_request'"
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - run: echo ${{ github.event.pull_request }}
