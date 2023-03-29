@@ -12,4 +12,4 @@ jobs:
     runs-on: ubuntu-latest
     permissions: {}
     steps:
-      - run: echo ${{ github.event.pull_request }}
+      - uses: crazy-max/ghaction-dump-context@v2
