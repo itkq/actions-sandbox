@@ -13,9 +13,9 @@ jobs:
         name: Get short SHA
         run: echo "result=${GITHUB_SHA:0:7}" >> "GITHUB_OUTPUT"
 
-  promote_stg_to_prd:
+  out:
     needs:
-      - output_short_sha
+      - sha
     runs-on: ubuntu-latest
     steps:
       - name: 'debug'
