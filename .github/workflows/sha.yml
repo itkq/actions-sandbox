@@ -5,13 +5,17 @@ on:
 jobs:
   sha:
     runs-on: ubuntu-latest
-    permissions: {}
+    permissions:
+      contents: read
     outputs:
       result: "${{ steps.short-sha.outputs.result }}"
     steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
       - id: short-sha
         name: Get short SHA
-        run: echo "result=${GITHUB_SHA:0:7}" >> "GITHUB_OUTPUT"
+        run: echo "result=$(git rev-parse HEAD | cut -c 1-8)" >> "$GITHUB_OUTPUT"
 
   out:
     needs:
