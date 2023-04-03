@@ -24,7 +24,9 @@ jobs:
           echo "result=${{ github.sha }}"
           echo "result=${{ github.sha }}" >> "$GITHUB_OUTPUT"
       - id: short-sha3
-        run: echo "result=${GITHUB_SHA:0:7}" >> "GITHUB_OUTPUT"
+        run: |
+          echo "result=${GITHUB_SHA:0:7}"
+          echo "result=${GITHUB_SHA:0:7}" >> "$GITHUB_OUTPUT"
 
   out:
     needs:
