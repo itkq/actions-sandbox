@@ -15,7 +15,9 @@ jobs:
           ref: ${{ github.ref }}
       - id: short-sha
         name: Get short SHA
-        run: echo "result=$(git rev-parse HEAD | cut -c 1-8)" >> "$GITHUB_OUTPUT"
+        run: |
+          echo "result=$(git rev-parse HEAD | cut -c 1-8)"
+          echo "result=$(git rev-parse HEAD | cut -c 1-8)" >> "$GITHUB_OUTPUT"
 
   out:
     needs:
