@@ -10,6 +10,7 @@ jobs:
     outputs:
       result1: "${{ steps.short-sha1.outputs.result }}"
       result2: "${{ steps.short-sha2.outputs.result }}"
+      result3: "${{ steps.short-sha3.outputs.result }}"
     steps:
       - uses: actions/checkout@v3
         with:
@@ -22,6 +23,8 @@ jobs:
         run: |
           echo "result=${{ github.sha }}"
           echo "result=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+      - id: short-sha3
+        run: echo "result=${GITHUB_SHA:0:7}" >> "GITHUB_OUTPUT"
 
   out:
     needs:
@@ -34,3 +37,6 @@ jobs:
       - name: 'sha 2'
         run: |
           echo "${{ needs.sha.outputs.result2 }}"
+      - name: 'sha 3'
+        run: |
+          echo "${{ needs.sha.outputs.result3 }}"
