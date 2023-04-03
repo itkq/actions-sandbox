@@ -8,22 +8,29 @@ jobs:
     permissions:
       contents: read
     outputs:
-      result: "${{ steps.short-sha.outputs.result }}"
+      result1: "${{ steps.short-sha1.outputs.result }}"
+      result2: "${{ steps.short-sha2.outputs.result }}"
     steps:
       - uses: actions/checkout@v3
         with:
           ref: ${{ github.ref }}
-      - id: short-sha
-        name: Get short SHA
+      - id: short-sha1
         run: |
           echo "result=$(git rev-parse HEAD | cut -c 1-8)"
           echo "result=$(git rev-parse HEAD | cut -c 1-8)" >> "$GITHUB_OUTPUT"
+      - id: short-sha2
+        run: |
+          echo "result=${{ github.sha }}"
+          echo "result=${{ github.sha }}" >> "$GITHUB_OUTPUT"
 
   out:
     needs:
       - sha
     runs-on: ubuntu-latest
     steps:
-      - name: 'debug'
+      - name: 'sha 1'
         run: |
-          echo "${{ needs.output_short_sha.outputs.result }}"
+          echo "${{ needs.sha.outputs.result1 }}"
+      - name: 'sha 2'
+        run: |
+          echo "${{ needs.sha.outputs.result2 }}"
