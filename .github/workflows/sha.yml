@@ -1,0 +1,23 @@
+name: sha
+on:
+  workflow_dispatch:
+
+jobs:
+  sha:
+    runs-on: ubuntu-latest
+    permissions: {}
+    outputs:
+      result: "${{ steps.short-sha.outputs.result }}"
+    steps:
+      - id: short-sha
+        name: Get short SHA
+        run: echo "result=${GITHUB_SHA:0:7}" >> "GITHUB_OUTPUT"
+
+  promote_stg_to_prd:
+    needs:
+      - output_short_sha
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'debug'
+        run: |
+          echo "${{ needs.output_short_sha.outputs.result }}"
