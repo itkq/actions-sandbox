@@ -1,0 +1,56 @@
+name: Docker
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: ref
+        type: string
+        required: false
+        default: main
+env:
+  IMAGE: public.ecr.aws/m5e8t6n8/itkq-test
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ inputs.ref }}
+      - uses: docker/setup-buildx-action@v2
+      - uses: docker/setup-qemu-action@v2
+      - uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registry-type: public
+      - uses: docker/metadata-action@v4
+        id: docker_meta
+        with:
+          images: ${{ env.IMAGE }}
+          tags: ${{ inputs.ref }}
+      - uses: docker/build-push-action@v4
+        with:
+          push: true
+          context: ./docker
+          platforms: linux/amd64
+          tags: ${{ steps.docker_meta.outputs.tags }}
+          provenance: false
+  alias:
+    needs:
+      - push
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - uses: docker/setup-buildx-action@v2
+      - uses: docker/metadata-action@v4
+        id: docker_meta
+        with:
+          images: public.ecr.aws/m5e8t6n8/itkq-test
+          tags: ${{ inputs.ref }}
+      - name: Pull image
+        run: docker pull ${{ env.IMAGE }}:${{ inputs.ref }}
+      - name: Push image
+        run: |
+          docker tag ${{ env.IMAGE }}:${{ inputs.ref }} ${{ env.IMAGE }}:${{ inputs.ref }}-2
+          docker push ${{ env.IMAGE }}:${{ inputs.ref }}-2
